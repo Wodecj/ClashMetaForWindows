@@ -50,6 +50,7 @@ jobs:
               assert len(installers)==1 and installers[0].stat().st_size>1_000_000
               for file in folder.iterdir():
                   name=file.name
+                  if name.startswith('SHA256SUMS-'): continue
                   if name=='THIRD-PARTY-VERSIONS.json': name=f'THIRD-PARTY-VERSIONS-{target}.json'
                   dest=dist/name
                   if dest.exists(): assert dest.read_bytes()==file.read_bytes()
