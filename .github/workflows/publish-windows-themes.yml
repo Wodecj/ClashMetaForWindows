@@ -1,0 +1,59 @@
+name: Publish verified Windows Themes
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        required: true
+        type: string
+      release_tag:
+        required: true
+        type: string
+permissions:
+  actions: read
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: Wodecj/ClashMetaForWindows
+      BUILD_RUN_ID: ${{ inputs.run_id }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Download and verify successful build
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$BUILD_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$RELEASE_TAG" =~ ^v[0-9][A-Za-z0-9.-]*$ ]]
+          test "$(gh run view "$BUILD_RUN_ID" --json conclusion --jq .conclusion)" = success
+          test "$(gh run view "$BUILD_RUN_ID" --json workflowName --jq .workflowName)" = 'Windows Themes'
+          gh run view "$BUILD_RUN_ID" --json headSha --jq .headSha > build-sha.txt
+          test "$(gh api "repos/$GH_REPO/git/ref/tags/$RELEASE_TAG" --jq .object.sha)" = "$(cat build-sha.txt)"
+          gh run download "$BUILD_RUN_ID" -D artifacts
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, shutil, json
+          root=Path('artifacts')
+          dist=Path('release-assets'); dist.mkdir()
+          sha=Path('build-sha.txt').read_text().strip()
+          for target in ['aarch64-pc-windows-msvc','x86_64-pc-windows-msvc']:
+              folder=root/f'Windows-Themes-{target}'
+              assert (folder/'SOURCE_COMMIT.txt').read_text(encoding='utf-8-sig').strip()==sha
+              sums=folder/f'SHA256SUMS-{target}.txt'
+              for line in sums.read_text(encoding='utf-8-sig').splitlines():
+                  digest,name=line.split('  ',1)
+                  assert Path(name).name==name
+                  assert hashlib.sha256((folder/name).read_bytes()).hexdigest()==digest
+              installers=list(folder.glob('*-setup.exe'))
+              assert len(installers)==1 and installers[0].stat().st_size>1_000_000
+              for file in folder.iterdir():
+                  name=file.name
+                  if name=='THIRD-PARTY-VERSIONS.json': name=f'THIRD-PARTY-VERSIONS-{target}.json'
+                  dest=dist/name
+                  if dest.exists(): assert dest.read_bytes()==file.read_bytes()
+                  else: shutil.copyfile(file,dest)
+          PY
+      - name: Upload verified installers and sources
+        run: gh release upload "$RELEASE_TAG" --clobber release-assets/*
