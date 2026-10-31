@@ -139,3 +139,7 @@ your own device. See the [Privacy Policy](./PRIVACY.md) for details.
 ## License
 
 GPL-3.0 License. See [License here](./LICENSE) for details.
+> **Clash Verge Themes** is Wodecj's community fork based on Clash Verge Rev v2.5.8.
+> Background settings: Settings → Theme → Background image. See [development and packaging](DEVELOPMENT-Themes.md) and [license notices](NOTICE-Themes.md).
+> Downloads: https://github.com/Wodecj/ClashMetaForWindows/releases/latest
+

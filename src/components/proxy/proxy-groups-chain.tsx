@@ -250,8 +250,7 @@ function ProxyVirtualList({
   onChangeProxy: (group: ProxyGroupView, member: ResolvedProxyMember) => void
 }) {
   const theme = useTheme()
-  const stickyBackground =
-    theme.palette.mode === 'dark' ? '#1e1f27' : 'var(--background-color)'
+  const stickyBackground = `var(--wallpaper-surface, ${theme.palette.mode === 'dark' ? '#1e1f27' : 'var(--background-color)'})`
 
   return (
     <div ref={parentRef} style={{ height, overflow: 'auto' }}>

@@ -216,6 +216,14 @@ export const useCustomTheme = () => {
         mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.06)'
       rootEle.style.setProperty('--divider-color', dividerColor)
       rootEle.style.setProperty('--background-color', backgroundColor)
+      if (hasUserBackground) {
+        rootEle.style.setProperty(
+          '--wallpaper-surface',
+          alpha(dt.background_color, mask),
+        )
+      } else {
+        rootEle.style.removeProperty('--wallpaper-surface')
+      }
       rootEle.style.setProperty('--selection-color', selectColor)
       rootEle.style.setProperty('--scroller-color', scrollColor)
       rootEle.style.setProperty('--primary-main', muiTheme.palette.primary.main)

@@ -1,3 +1,7 @@
+## v2.5.8-themes.1
+
+- Added local wallpaper selection with fit modes, adjustable overlay and persistent settings on Windows.
+
 ## v2.5.8
 
 <details>
