@@ -2,9 +2,13 @@ name: Windows Themes
 on:
   push:
     branches: [main]
+    paths-ignore: ['.github/workflows/**']
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: windows-themes-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build:
     strategy:
