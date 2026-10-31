@@ -11,12 +11,12 @@ use tauri::Manager as _;
 #[cfg(not(feature = "verge-dev"))]
 pub static APP_ID: &str = "io.github.wodecj.clash-verge-themes";
 #[cfg(not(feature = "verge-dev"))]
-pub static BACKUP_DIR: &str = "clash-verge-rev-backup";
+pub static BACKUP_DIR: &str = "clash-verge-themes-backup";
 
 #[cfg(feature = "verge-dev")]
 pub static APP_ID: &str = "io.github.wodecj.clash-verge-themes.dev";
 #[cfg(feature = "verge-dev")]
-pub static BACKUP_DIR: &str = "clash-verge-rev-backup-dev";
+pub static BACKUP_DIR: &str = "clash-verge-themes-backup-dev";
 
 pub static CLASH_CONFIG: &str = "config.yaml";
 pub static VERGE_CONFIG: &str = "verge.yaml";
