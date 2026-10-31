@@ -38,7 +38,7 @@ jobs:
       - name: Prepare sidecars and resources
         run: pnpm prebuild ${{ matrix.target }}
       - name: Build Windows installer
-        run: pnpm exec tauri build --target ${{ matrix.target }} --bundles nsis -- --locked
+        run: node node_modules/@tauri-apps/cli/tauri.js build --target ${{ matrix.target }} --bundles nsis -- --locked
       - name: Package sources and checksums
         shell: pwsh
         run: |

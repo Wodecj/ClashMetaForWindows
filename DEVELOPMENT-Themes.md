@@ -35,7 +35,7 @@ rustup target add aarch64-pc-windows-msvc x86_64-pc-windows-msvc
 pnpm install --frozen-lockfile
 pnpm typecheck
 pnpm prebuild aarch64-pc-windows-msvc
-pnpm exec tauri build --target aarch64-pc-windows-msvc --bundles nsis -- --locked
+node node_modules/@tauri-apps/cli/tauri.js build --target aarch64-pc-windows-msvc --bundles nsis -- --locked
 ```
 
 For x64 use x86_64-pc-windows-msvc in both prebuild and build commands. Output:
