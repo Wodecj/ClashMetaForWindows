@@ -924,6 +924,7 @@ interface IVergeConfig {
     font_family?: string
     css_injection?: string
     background_image?: string
+    background_fit?: 'contain' | 'cover' | 'stretch'
     background_blend_mode?: string
     background_opacity?: number
   }

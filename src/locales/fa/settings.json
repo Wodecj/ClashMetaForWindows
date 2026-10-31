@@ -219,13 +219,24 @@
           "errorColor": "رنگ خطا",
           "successColor": "رنگ موفقیت",
           "fontFamily": "خانواده فونت",
-          "cssInjection": "تزریق CSS"
+          "cssInjection": "تزریق CSS",
+          "backgroundImage": "Background image",
+          "backgroundFit": "Image fit",
+          "backgroundOpacity": "Background overlay",
+          "backgroundHint": "Stored locally in settings (max 5 MiB). 0%: clear image; 100%: hidden. Save to apply."
         },
         "actions": {
-          "editCss": "Edit CSS"
+          "editCss": "Edit CSS",
+          "chooseImage": "Choose image",
+          "removeImage": "Remove image"
         },
         "dialogs": {
           "editCssTitle": "Edit CSS"
+        },
+        "fit": {
+          "contain": "Show entire image",
+          "cover": "Crop to fill",
+          "stretch": "Stretch to fill"
         }
       },
       "layout": {

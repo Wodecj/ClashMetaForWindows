@@ -789,12 +789,18 @@ export interface TranslationResources {
           }
           theme: {
             actions: {
+              chooseImage: string
               editCss: string
+              removeImage: string
             }
             dialogs: {
               editCssTitle: string
             }
             fields: {
+              backgroundFit: string
+              backgroundHint: string
+              backgroundImage: string
+              backgroundOpacity: string
               cssInjection: string
               errorColor: string
               fontFamily: string
@@ -805,6 +811,11 @@ export interface TranslationResources {
               secondaryText: string
               successColor: string
               warningColor: string
+            }
+            fit: {
+              contain: string
+              cover: string
+              stretch: string
             }
             title: string
           }

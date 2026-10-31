@@ -219,13 +219,24 @@
           "errorColor": "Fehlerfarbe",
           "successColor": "Erfolgsfarbe",
           "fontFamily": "Schriftfamilie",
-          "cssInjection": "CSS-Einbindung"
+          "cssInjection": "CSS-Einbindung",
+          "backgroundImage": "Background image",
+          "backgroundFit": "Image fit",
+          "backgroundOpacity": "Background overlay",
+          "backgroundHint": "Stored locally in settings (max 5 MiB). 0%: clear image; 100%: hidden. Save to apply."
         },
         "actions": {
-          "editCss": "CSS bearbeiten"
+          "editCss": "CSS bearbeiten",
+          "chooseImage": "Choose image",
+          "removeImage": "Remove image"
         },
         "dialogs": {
           "editCssTitle": "CSS bearbeiten"
+        },
+        "fit": {
+          "contain": "Show entire image",
+          "cover": "Crop to fill",
+          "stretch": "Stretch to fill"
         }
       },
       "layout": {

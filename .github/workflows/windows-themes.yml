@@ -1,0 +1,56 @@
+name: Windows Themes
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64-pc-windows-msvc, aarch64-pc-windows-msvc]
+    runs-on: windows-latest
+    timeout-minutes: 90
+    env:
+      HUSKY: '0'
+      CARGO_INCREMENTAL: '0'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24.21.0'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.99.0'
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: '. -> target'
+          key: ${{ matrix.target }}
+      - run: npm install -g pnpm@12.10.0
+      - run: pnpm install --frozen-lockfile
+      - name: Check frontend
+        run: |
+          pnpm typecheck
+          pnpm exec eslint src/components/setting/mods/theme-viewer.tsx src/pages/_layout/hooks/use-custom-theme.ts src/utils/wallpaper.ts --max-warnings=0
+      - name: Prepare sidecars and resources
+        run: pnpm prebuild ${{ matrix.target }}
+      - name: Build Windows installer
+        run: pnpm exec tauri build --target ${{ matrix.target }} --bundles nsis -- --locked
+      - name: Package sources and checksums
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-assets | Out-Null
+          Copy-Item target/${{ matrix.target }}/release/bundle/nsis/*-setup.exe release-assets/
+          git rev-parse HEAD | Set-Content release-assets/SOURCE_COMMIT.txt
+          Copy-Item LICENSE,NOTICE-Themes.md,DEVELOPMENT-Themes.md release-assets/
+          Copy-Item node_modules/.verge/.version_cache.json release-assets/THIRD-PARTY-VERSIONS.json
+          git archive --format=zip --output=release-assets/Clash-Verge-Themes-source.zip HEAD
+          Get-ChildItem release-assets -File | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)" } | Set-Content release-assets/SHA256SUMS-${{ matrix.target }}.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Themes-${{ matrix.target }}
+          path: release-assets/*
+          retention-days: 30

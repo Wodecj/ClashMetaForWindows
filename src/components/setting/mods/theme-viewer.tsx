@@ -4,6 +4,10 @@ import {
   List,
   ListItem,
   ListItemText,
+  MenuItem,
+  Select,
+  Slider,
+  Box,
   styled,
   TextField,
   useTheme,
@@ -23,6 +27,7 @@ import { EditorViewer } from '@/components/profile/editor-viewer'
 import { useVerge } from '@/hooks/use-verge'
 import { defaultDarkTheme, defaultTheme } from '@/pages/_theme'
 import { showNotice } from '@/services/notice-service'
+import { readWallpaper } from '@/utils/wallpaper'
 
 export function ThemeViewer(props: { ref?: React.Ref<DialogRef> }) {
   const { ref } = props
@@ -35,6 +40,8 @@ export function ThemeViewer(props: { ref?: React.Ref<DialogRef> }) {
   const { verge, patchVerge } = useVerge()
   const { theme_setting } = verge ?? {}
   const [theme, setTheme] = useState(theme_setting || {})
+  const [importing, setImporting] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   // Latest theme ref to avoid stale closures when saving CSS
   const themeRef = useRef(theme)
   useEffect(() => {
@@ -60,6 +67,7 @@ export function ThemeViewer(props: { ref?: React.Ref<DialogRef> }) {
   }
 
   const onSave = useLockFn(async () => {
+    if (importing) return
     try {
       await patchVerge({ theme_setting: theme })
       setOpen(false)
@@ -154,6 +162,116 @@ export function ThemeViewer(props: { ref?: React.Ref<DialogRef> }) {
       onOk={onSave}
     >
       <List sx={{ pt: 0 }}>
+        <Item>
+          <ListItemText
+            primary={t(
+              'settings.components.verge.theme.fields.backgroundImage',
+            )}
+          />
+          <input
+            ref={fileInputRef}
+            type="file"
+            hidden
+            accept="image/png,image/jpeg,image/webp,image/bmp"
+            onChange={async (event) => {
+              const file = event.target.files?.[0]
+              event.target.value = ''
+              if (!file) return
+              setImporting(true)
+              try {
+                const image = await readWallpaper(file)
+                setTheme((current) => ({ ...current, background_image: image }))
+              } catch (error) {
+                showNotice.error(error)
+              } finally {
+                setImporting(false)
+              }
+            }}
+          />
+          <Button
+            disabled={importing}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {t('settings.components.verge.theme.actions.chooseImage')}
+          </Button>
+          <Button
+            disabled={importing || !theme.background_image}
+            onClick={() =>
+              setTheme((current) => ({
+                ...current,
+                background_image: '',
+                background_fit: 'contain',
+                background_opacity: 0.3,
+              }))
+            }
+          >
+            {t('settings.components.verge.theme.actions.removeImage')}
+          </Button>
+        </Item>
+        {theme.background_image && (
+          <>
+            <Box
+              component="img"
+              src={theme.background_image}
+              alt={t('settings.components.verge.theme.fields.backgroundImage')}
+              sx={{ width: '100%', height: 120, objectFit: 'contain' }}
+            />
+            <Item>
+              <ListItemText
+                primary={t(
+                  'settings.components.verge.theme.fields.backgroundFit',
+                )}
+              />
+              <Select
+                size="small"
+                value={theme.background_fit ?? 'contain'}
+                onChange={(event) =>
+                  setTheme((current) => ({
+                    ...current,
+                    background_fit: event.target.value as
+                      | 'contain'
+                      | 'cover'
+                      | 'stretch',
+                  }))
+                }
+              >
+                <MenuItem value="contain">
+                  {t('settings.components.verge.theme.fit.contain')}
+                </MenuItem>
+                <MenuItem value="cover">
+                  {t('settings.components.verge.theme.fit.cover')}
+                </MenuItem>
+                <MenuItem value="stretch">
+                  {t('settings.components.verge.theme.fit.stretch')}
+                </MenuItem>
+              </Select>
+            </Item>
+            <Item sx={{ flexDirection: 'column', alignItems: 'stretch' }}>
+              <ListItemText
+                primary={`${t('settings.components.verge.theme.fields.backgroundOpacity')}: ${Math.round((theme.background_opacity ?? 0.3) * 100)}%`}
+                secondary={t(
+                  'settings.components.verge.theme.fields.backgroundHint',
+                )}
+              />
+              <Slider
+                min={0}
+                max={100}
+                step={1}
+                valueLabelDisplay="auto"
+                aria-label={t(
+                  'settings.components.verge.theme.fields.backgroundOpacity',
+                )}
+                value={Math.round((theme.background_opacity ?? 0.3) * 100)}
+                onChange={(_, value) =>
+                  setTheme((current) => ({
+                    ...current,
+                    background_opacity: (value as number) / 100,
+                  }))
+                }
+              />
+            </Item>
+          </>
+        )}
         {fieldDefinitions.map((field) => renderItem(field.labelKey, field.key))}
 
         <Item>

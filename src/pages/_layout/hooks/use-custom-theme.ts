@@ -72,7 +72,11 @@ export const useCustomTheme = () => {
   const mode = useThemeMode()
   const setMode = useSetThemeMode()
   const userBackgroundImage = theme_setting?.background_image || ''
-  const hasUserBackground = !!userBackgroundImage
+  const hasUserBackground = userBackgroundImage.startsWith('data:image/')
+  const mask = Math.min(
+    1,
+    Math.max(0, theme_setting?.background_opacity ?? 0.3),
+  )
 
   useEffect(() => {
     if (theme_mode === 'light' || theme_mode === 'dark') {
@@ -164,7 +168,9 @@ export const useCustomTheme = () => {
             secondary: setting.secondary_text || dt.secondary_text,
           },
           background: {
-            paper: dt.background_color,
+            paper: hasUserBackground
+              ? alpha(dt.background_color, mask)
+              : dt.background_color,
             default: dt.background_color,
           },
         },
@@ -191,7 +197,9 @@ export const useCustomTheme = () => {
           success: { main: dt.success_color },
           text: { primary: dt.primary_text, secondary: dt.secondary_text },
           background: {
-            paper: dt.background_color,
+            paper: hasUserBackground
+              ? alpha(dt.background_color, mask)
+              : dt.background_color,
             default: dt.background_color,
           },
         },
@@ -229,7 +237,9 @@ export const useCustomTheme = () => {
       )
       rootEle.style.setProperty(
         '--user-background-image',
-        hasUserBackground ? `url('${userBackgroundImage}')` : 'none',
+        hasUserBackground
+          ? `url(${JSON.stringify(userBackgroundImage)})`
+          : 'none',
       )
       rootEle.style.setProperty(
         '--background-blend-mode',
@@ -272,22 +282,29 @@ export const useCustomTheme = () => {
           background-color: ${mode === 'light' ? '#a1a1a1' : '#666666'};
         }
 
-        /* 背景图处理 */
+        /* Wallpaper surfaces stay independent from text and control opacity. */
         body {
           font-family: ${dt.font_family};
           background-color: var(--background-color);
-          ${
-            hasUserBackground
-              ? `
-            background-image: var(--user-background-image);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-blend-mode: var(--background-blend-mode);
-            opacity: var(--background-opacity);
-          `
-              : ''
+        }
+        ${
+          hasUserBackground
+            ? `
+          .layout {
+            background-color: ${dt.background_color} !important;
+            background-image: linear-gradient(${alpha(dt.background_color, mask)}, ${alpha(dt.background_color, mask)}), var(--user-background-image) !important;
+            background-size: ${setting.background_fit === 'cover' ? 'cover' : setting.background_fit === 'stretch' ? '100% 100%' : 'contain'} !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
           }
+          .layout .base-container, .layout .base-container > section {
+            background-color: transparent !important;
+          }
+          .layout .MuiPaper-root {
+            background-image: none;
+          }
+        `
+            : ''
         }
 
         /* 修复可能的白色边框 */
@@ -311,7 +328,7 @@ export const useCustomTheme = () => {
     }
 
     return muiTheme
-  }, [mode, theme_setting, userBackgroundImage, hasUserBackground])
+  }, [mode, theme_setting, userBackgroundImage, hasUserBackground, mask])
 
   useEffect(() => {
     const id = setTimeout(() => {

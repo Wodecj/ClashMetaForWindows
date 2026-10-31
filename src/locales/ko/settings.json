@@ -219,13 +219,24 @@
           "errorColor": "오류 색상",
           "successColor": "성공 색상",
           "fontFamily": "글꼴",
-          "cssInjection": "CSS 삽입"
+          "cssInjection": "CSS 삽입",
+          "backgroundImage": "Background image",
+          "backgroundFit": "Image fit",
+          "backgroundOpacity": "Background overlay",
+          "backgroundHint": "Stored locally in settings (max 5 MiB). 0%: clear image; 100%: hidden. Save to apply."
         },
         "actions": {
-          "editCss": "CSS 편집"
+          "editCss": "CSS 편집",
+          "chooseImage": "Choose image",
+          "removeImage": "Remove image"
         },
         "dialogs": {
           "editCssTitle": "CSS 편집"
+        },
+        "fit": {
+          "contain": "Show entire image",
+          "cover": "Crop to fill",
+          "stretch": "Stretch to fill"
         }
       },
       "layout": {
