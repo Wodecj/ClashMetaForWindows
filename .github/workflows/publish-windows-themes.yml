@@ -55,5 +55,40 @@ jobs:
                   if dest.exists(): assert dest.read_bytes()==file.read_bytes()
                   else: shutil.copyfile(file,dest)
           PY
+      - name: Include corresponding third-party sources
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess, json, re, zipfile, hashlib, tarfile
+          dist=Path('release-assets')
+          refs=set()
+          for file in dist.glob('THIRD-PARTY-VERSIONS-*.json'):
+              versions=json.loads(file.read_text())
+              for key in ['META_VERSION','META_ALPHA_VERSION']:
+                  version=versions[key]['version']
+                  ref=version
+                  if key=='META_ALPHA_VERSION':
+                      match=re.search(r'([0-9a-f]{7,40})$', version)
+                      assert match, version
+                      ref=match.group(1)
+                  refs.add(('MetaCubeX/mihomo',ref))
+          with zipfile.ZipFile(dist/'Clash-Verge-Themes-source.zip') as archive:
+              manifest=archive.read('src-tauri/Cargo.toml').decode()
+          line=next(line for line in manifest.splitlines() if line.startswith('clash_verge_service_ipc ='))
+          version=re.search(r'version\s*=\s*"([^"]+)"',line).group(1)
+          refs.add(('clash-verge-rev/clash-verge-service-ipc','v'+version))
+          sources=[]
+          for repo,ref in sorted(refs):
+              commit=json.loads(subprocess.check_output(['gh','api',f'repos/{repo}/commits/{ref}']))['sha']
+              name=f'{repo.split("/")[-1]}-{commit}-source.tar.gz'
+              with (dist/name).open('wb') as stream:
+                  subprocess.run(['gh','api',f'repos/{repo}/tarball/{commit}'],stdout=stream,check=True)
+              with tarfile.open(dist/name,'r:gz') as archive:
+                  assert len(archive.getmembers())>10
+              sources.append({'repository':repo,'ref':ref,'commit':commit,'archive':name})
+          (dist/'THIRD-PARTY-SOURCES.json').write_text(json.dumps(sources,indent=2)+'\n')
+          (dist/'SHA256SUMS.txt').write_text(''.join(f'{hashlib.sha256(f.read_bytes()).hexdigest()}  {f.name}\n' for f in sorted(dist.iterdir()) if f.name!='SHA256SUMS.txt'))
+          PY
       - name: Upload verified installers and sources
         run: gh release upload "$RELEASE_TAG" --clobber release-assets/*
