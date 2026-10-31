@@ -1,3 +1,7 @@
+## v2.5.8-themes.2
+
+- Fixed opaque proxy and subscription cards so all states follow the wallpaper overlay on Windows.
+
 ## v2.5.8-themes.1
 
 - Added local wallpaper selection with fit modes, adjustable overlay and persistent settings on Windows.

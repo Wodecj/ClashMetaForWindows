@@ -24,3 +24,8 @@ source revisions are recorded in pnpm-lock.yaml and Cargo.lock.
 The background image is embedded in the local verge.yaml configuration and can
 therefore be included in user-created configuration backups. No image is sent
 to this repository or uploaded by the wallpaper feature.
+
+Version 2.5.8-themes.2 (2026-11-01): fixes ordinary, hovered and selected proxy
+surfaces, subscriptions, extension cards and page input backgrounds so they all
+follow wallpaper overlay opacity. Selected nodes retain their border indicator.
+This release builds and distributes Windows x64 only.

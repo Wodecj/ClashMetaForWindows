@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [x86_64-pc-windows-msvc, aarch64-pc-windows-msvc]
+        target: [x86_64-pc-windows-msvc]
     runs-on: windows-latest
     timeout-minutes: 90
     env:
@@ -38,7 +38,7 @@ jobs:
       - name: Check frontend
         run: |
           pnpm typecheck
-          pnpm exec eslint src/components/setting/mods/theme-viewer.tsx src/pages/_layout/hooks/use-custom-theme.ts src/utils/wallpaper.ts --max-warnings=0
+          pnpm exec eslint src/components/setting/mods/theme-viewer.tsx src/pages/_layout/hooks/use-custom-theme.ts src/utils/wallpaper.ts src/components/proxy/proxy-item.tsx src/components/proxy/proxy-item-mini.tsx src/components/proxy/proxy-chain.tsx src/components/profile/profile-box.tsx src/components/base/base-styled-text-field.tsx --max-warnings=0
       - name: Prepare sidecars and resources
         run: pnpm prebuild ${{ matrix.target }}
       - name: Build Windows installer

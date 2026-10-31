@@ -44,7 +44,7 @@ target/<target>/release/bundle/nsis/*-setup.exe. For development run
 
 ## Packaging and publishing
 
-The Windows Themes Actions workflow builds both Windows architectures, checks
+From themes.2, the Windows Themes Actions workflow builds Windows x64 only, checks
 TypeScript and changed frontend files, then uploads installers, source archive,
 license, notices, source commit, third-party version record and SHA-256 sums.
 Publish only artifacts from a successful run, in a release targeting that exact
@@ -72,3 +72,8 @@ patch/persistence path. Image selection uses the WebView's file picker.
 The original upstream workflows are retained in .github/upstream-workflows
 as reference, rather than running upstream release and notification jobs in
 this independent repository. GPL-3.0-only applies; see LICENSE and NOTICE-Themes.md.
+
+Version themes.2 fixes all normal, hovered and selected proxy cards, subscription
+and extension cards, and page input surfaces to follow the wallpaper overlay.
+At 0% their backgrounds are transparent; selection borders remain visible.
+The published installer is x64 only. ARM64 commands above are for reference.

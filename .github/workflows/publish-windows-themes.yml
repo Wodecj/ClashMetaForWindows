@@ -38,7 +38,7 @@ jobs:
           root=Path('artifacts')
           dist=Path('release-assets'); dist.mkdir()
           sha=Path('build-sha.txt').read_text().strip()
-          for target in ['aarch64-pc-windows-msvc','x86_64-pc-windows-msvc']:
+          for target in ['x86_64-pc-windows-msvc']:
               folder=root/f'Windows-Themes-{target}'
               assert (folder/'SOURCE_COMMIT.txt').read_text(encoding='utf-8-sig').strip()==sha
               sums=folder/f'SHA256SUMS-{target}.txt'

@@ -155,7 +155,7 @@ const ChainCard = ({
         display: 'flex',
         alignItems: 'center',
         p: 1,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: `var(--wallpaper-surface, ${theme.palette.background.default})`,
         borderRadius: 1,
         border: roleColor
           ? `1.5px solid ${roleColor}`

@@ -51,12 +51,18 @@ export const ProxyItemMini = (props: Props) => {
           justifyContent: 'space-between',
           alignItems: 'center',
         },
-        ({ palette: { mode, primary } }) => {
-          const bgcolor = mode === 'light' ? '#ffffff' : '#24252f'
+        ({ palette: { mode, primary, action } }) => {
+          const bgcolor = `var(--wallpaper-surface, ${mode === 'light' ? '#ffffff' : '#24252f'})`
           const showDelay = delayValue > 0
           const selectColor = mode === 'light' ? primary.main : primary.light
 
           return {
+            '&:hover': {
+              backgroundColor: `var(--wallpaper-surface, ${action.hover})`,
+            },
+            '&.Mui-selected:hover': {
+              backgroundColor: `var(--wallpaper-surface, ${alpha(primary.main, action.selectedOpacity + action.hoverOpacity)})`,
+            },
             '&:hover .the-check': { display: !showDelay ? 'block' : 'none' },
             '&:hover .the-delay': { display: showDelay ? 'block' : 'none' },
             '&:hover .the-icon': { display: 'none' },
@@ -71,10 +77,7 @@ export const ProxyItemMini = (props: Props) => {
               width: `calc(100% + 3px)`,
               marginLeft: `-3px`,
               borderLeft: `3px solid ${selectColor}`,
-              bgcolor:
-                mode === 'light'
-                  ? alpha(primary.main, 0.15)
-                  : alpha(primary.main, 0.35),
+              bgcolor: `var(--wallpaper-surface, ${alpha(primary.main, mode === 'light' ? 0.15 : 0.35)})`,
             },
             backgroundColor: bgcolor,
           }
